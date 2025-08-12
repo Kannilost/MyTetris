@@ -1,6 +1,6 @@
 # VocApp
 Test User:
 
-Testtest
+Username: TestUser
 
-Test123
+Password: abc123
