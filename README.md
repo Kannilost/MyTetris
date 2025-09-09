@@ -1,1 +1,1 @@
-This is not the VocabularyTrainer
+This is a Vibecode Tetris
