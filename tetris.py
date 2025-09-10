@@ -1,5 +1,7 @@
 import pygame
 import random
+import json
+import os
 
 
 ROWS, COLS = 20, 10
@@ -186,6 +188,11 @@ def show_homescreen(screen, font):
         screen.blit(title, title_pos)
         slider.draw(screen)
         button.draw(screen)
+
+        highscore = load_highscore()
+        hs_text = font.render(f"Highscore: {highscore}", True, WHITE)
+        screen.blit(hs_text, (WIDTH // 2 - hs_text.get_width() // 2, HEIGHT // 2 - 70))
+
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -195,6 +202,17 @@ def show_homescreen(screen, font):
             slider.handle_event(event)
             if button.is_clicked(event):
                 return slider.value  # Übergibt das gewählte Level
+            
+def load_highscore():
+    if os.path.exists("highscore.json"):
+        with open("highscore.json", "r") as f:
+            data = json.load(f)
+            return data.get("highscore", 0)
+    return 0
+
+def save_highscore(score):
+    with open("highscore.json", "w") as f:
+        json.dump({"highscore": score}, f)
 
 # === Hauptfunktion ===
 def main():
@@ -211,7 +229,7 @@ def main():
     pygame.mixer.music.load("sounds/itseasy.mp3")
     pygame.mixer.music.play(-1)  # Dauerschleife
     current_music = "normal"
-    move_delay = 0.1  # Sekunden zwischen Bewegungen
+    move_delay = 0.05  # Sekunden zwischen Bewegungen
     initial_delay = 0.2      # Wartezeit bevor Wiederholung startet
     hold_time = 0            # Wie lange Taste gedrückt ist
     key_held = None          # Welche Taste wird gehalten
@@ -219,10 +237,6 @@ def main():
     next_piece = Tetromino()
     score = 0
     lines_cleared_total = 0
-    pygame.init()
-    font = pygame.font.SysFont("Arial", 24)
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Tetris")
     clock = pygame.time.Clock()
     grid = create_grid()
     fall_time = 0
@@ -381,9 +395,21 @@ def main():
     score_text = font.render(f"Final Score: {score}", True, BLACK)
     screen.blit(game_over_text, (WIDTH // 2 - 60, HEIGHT // 2 - 30))
     screen.blit(score_text, (WIDTH // 2 - 70, HEIGHT // 2 + 10))
+
+    highscore = load_highscore()
+    hs_text = font.render(f"Highscore: {highscore}", True, BLACK)
+    screen.blit(hs_text, (WIDTH // 2 - 70, HEIGHT // 2 + 40))
+
+    if score > highscore:
+        save_highscore(score)
+        new_high_text = font.render("Neuer Highscore!", True, (0, 255, 0))
+        screen.blit(new_high_text, (WIDTH // 2 - 80, HEIGHT // 2 + 50))
+
+
     pygame.display.flip()
     pygame.time.wait(5000)
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
