@@ -2,7 +2,6 @@ import pygame
 import random
 import json
 import os
-import times
 
 
 ROWS, COLS = 20, 10
